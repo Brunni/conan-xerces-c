@@ -1,4 +1,4 @@
-from conans import ConanFile, tools
+from conans import ConanFile, tools, AutoToolsBuildEnvironment
 import zipfile
 import os
 
@@ -8,7 +8,7 @@ class xercescConan(ConanFile):
 	license = "http://www.apache.org/licenses/LICENSE-2.0.html"
 	settings = {
 		"os": ["Windows", "Linux"],
-		"compiler": ["Visual Studio"],
+		"compiler": ["Visual Studio", "gcc"],
 		"build_type": ["Debug", "Release"],
 		"arch": ["x86", "x86_64"]
 	}
@@ -39,7 +39,7 @@ class xercescConan(ConanFile):
 		self.copy("*.exp", dst="lib", keep_path=False)
 		self.copy("*.dll", dst="bin", keep_path=False)
 		self.copy("*.a", dst="lib", keep_path=False)
-		self.copy("*.so", dst="bin", keep_path=False)
+		self.copy("*.so", dst="lib", keep_path=False)
 		
 	def build_with_vs(self):
 		solution_path = "{0}/{1}/projects/Win32/VC{2}/xerces-all/xerces-all.sln".format(self.conanfile_directory, self.src_dir, str(self.settings.compiler.version))
@@ -62,14 +62,22 @@ class xercescConan(ConanFile):
 
 	# *WARNING: untested!
 	def build_with_make(self):
-		env = ConfigureEnvironment(self.deps_cpp_info, self.settings)
+		if self.options.shared == True:
+			sharedoption = "--disable-static"
+		else:
+			sharedoption = "--disable-shared"
+		env_build = AutoToolsBuildEnvironment(self)
 		self.run("cd %s && %s" % (self.src_dir, 'chmod u+x configure'))
 		self.run("cd %s/config && %s" % (self.src_dir, 'chmod u+x pretty-make'))
-		self.run("cd %s && %s %s" % (self.src_dir, env.command_line, './configure'))
-		self.run("cd %s && %s %s" % (self.src_dir, env.command_line, 'make'))
+	        with tools.environment_append(env_build.vars):
+			self.run("cd %s && %s %s" % (self.src_dir, './configure', sharedoption))
+			self.run("cd %s && %s " % (self.src_dir, 'make -j 8'))
 		
 	def package_info(self):
-		if self.options.shared == True:
-			self.cpp_info.libs = ["xerces-c_3"]
+		if self.settings.os == "Linux":
+			self.cpp_info.libs = ["xerces-c"]
 		else:
-			self.cpp_info.libs = ["xerces-c_static_3"]
+			if self.options.shared == True:
+				self.cpp_info.libs = ["xerces-c_3"]
+			else:
+				self.cpp_info.libs = ["xerces-c_static_3"]

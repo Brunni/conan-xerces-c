@@ -1,14 +1,14 @@
 from conans import ConanFile, CMake
 import os
 
-channel = os.getenv("CONAN_CHANNEL", "Testing")
+channel = os.getenv("CONAN_CHANNEL", "testing")
 username = os.getenv("CONAN_USERNAME", "Brunni")
 
 
 class ReuseConan(ConanFile):
     settings = {
-        "os": ["Windows"],
-        "compiler": ["Visual Studio"],
+        "os": ["Windows", "Linux"],
+        "compiler": ["Visual Studio", "gcc"],
         "build_type": ["Debug", "Release"],
         "arch": ["x86", "x86_64"]
     }
