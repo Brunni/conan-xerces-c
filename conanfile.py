@@ -75,7 +75,7 @@ class xercescConan(ConanFile):
 		
 	def package_info(self):
 		if self.settings.os == "Linux":
-			self.cpp_info.libs = ["xerces-c"]
+			self.cpp_info.libs = ["xerces-c", "pthread"]
 		else:
 			if self.options.shared == True:
 				self.cpp_info.libs = ["xerces-c_3"]
