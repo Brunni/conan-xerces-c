@@ -78,6 +78,9 @@ class xercescConan(ConanFile):
 			self.cpp_info.libs = ["xerces-c", "pthread"]
 		else:
 			if self.options.shared == True:
-				self.cpp_info.libs = ["xerces-c_3"]
+				if self.settings.build_type == "Debug":
+					self.cpp_info.libs = ["xerces-c_3D"]
+				else:
+					self.cpp_info.libs = ["xerces-c_3"]
 			else:
 				self.cpp_info.libs = ["xerces-c_static_3"]
