@@ -21,7 +21,7 @@ class xercescConan(ConanFile):
 	src_dir = "xerces-c-3.1.4"
 
 	def source(self):
-		tools.download("http://ftp.halifax.rwth-aachen.de/apache/xerces/c/3/sources/xerces-c-3.1.4.zip", "xerces.zip")
+		tools.download("https://archive.apache.org/dist/xerces/c/3/sources/xerces-c-3.1.4.zip", "xerces.zip")
 		zip_ref = zipfile.ZipFile("xerces.zip", 'r')
 		zip_ref.extractall()
 		zip_ref.close()
